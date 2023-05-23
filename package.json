@@ -1,0 +1,31 @@
+{
+  "name": "simple-paypal-sdk",
+  "version": "1.1.0",
+  "description": "Simple PayPal Sdk",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "keywords": [
+    "paypal",
+    "paypal-server-api",
+    "paypal-rest-sdk",
+    "paypal-node-sdk"
+  ],
+  "devDependencies": {
+    "eslint": "8.36.0",
+    "eslint-config-standard": "17.0.0",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "6.1.1",
+    "eslint-plugin-standard": "4.1.0"
+  },
+  "dependencies": {
+    "https-proxy-agent": "5.0.1",
+    "memory-cache": "0.2.0",
+    "request": "2.88.2",
+    "request-promise": "4.2.6",
+    "socks-proxy-agent": "7.0.0"
+  }
+}
