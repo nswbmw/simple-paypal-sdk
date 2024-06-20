@@ -1,6 +1,6 @@
 {
   "name": "simple-paypal-sdk",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Simple PayPal Sdk",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   ],
   "devDependencies": {
     "eslint": "8.36.0",
-    "eslint-config-standard": "17.0.0",
+    "eslint-config-standard": "17.1.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-standard": "4.1.0"
