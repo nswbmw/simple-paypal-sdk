@@ -17,8 +17,10 @@ export interface PayPalOptions {
   proxy?: ProxyOptions
 }
 
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD'
+
 export interface ExecuteOptions {
-  method?: string
+  method?: HttpMethod
   url: string
   headers?: Record<string, string | number | boolean>
   body?: any
