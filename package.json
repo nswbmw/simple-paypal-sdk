@@ -1,31 +1,57 @@
 {
   "name": "simple-paypal-sdk",
-  "version": "1.2.0",
-  "description": "Simple PayPal Sdk",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Simple PayPal SDK for Node.js.",
+  "version": "2.0.0",
+  "type": "module",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs",
+      "default": "./dist/esm/index.js"
+    }
   },
-  "author": "",
+  "files": [
+    "dist",
+    "types",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "build": "tsup",
+    "prepublishOnly": "npm run lint && npm run build",
+    "prepare": "husky"
+  },
+  "author": "nswbmw",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nswbmw/simple-paypal-sdk.git"
+  },
   "keywords": [
     "paypal",
     "paypal-server-api",
     "paypal-rest-sdk",
-    "paypal-node-sdk"
+    "paypal-node-sdk",
+    "paypal-sdk"
   ],
   "devDependencies": {
-    "eslint": "8.36.0",
-    "eslint-config-standard": "17.1.0",
-    "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "6.1.1",
-    "eslint-plugin-standard": "4.1.0"
+    "@commitlint/cli": "20.1.0",
+    "@commitlint/config-conventional": "20.0.0",
+    "eslint": "9.39.1",
+    "husky": "9.1.7",
+    "neostandard": "0.12.2",
+    "tsup": "8.5.1"
   },
   "dependencies": {
-    "https-proxy-agent": "5.0.1",
+    "https-proxy-agent": "7.0.6",
+    "lite-request": "1.0.2",
     "memory-cache": "0.2.0",
-    "request": "2.88.2",
-    "request-promise": "4.2.6",
-    "socks-proxy-agent": "7.0.0"
+    "socks-proxy-agent": "8.0.5"
   }
 }
