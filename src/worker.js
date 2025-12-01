@@ -1,7 +1,4 @@
-import request from 'lite-request'
 import MemoryCache from 'memory-cache'
-import { HttpsProxyAgent } from 'https-proxy-agent'
-import { SocksProxyAgent } from 'socks-proxy-agent'
 
 const cache = new MemoryCache.Cache()
 
@@ -13,30 +10,6 @@ class PayPal {
 
     if (!this.clientId || !this.clientSecret) {
       throw new TypeError('No clientId or clientSecret')
-    }
-
-    const proxy = options.proxy
-    if (proxy) {
-      if (typeof proxy === 'string') {
-        if (proxy.startsWith('http://')) {
-          this.agent = new HttpsProxyAgent(proxy)
-        } else if (proxy.startsWith('socks://')) {
-          this.agent = new SocksProxyAgent(proxy)
-        }
-      } else if (typeof proxy === 'object') {
-        if (!['http', 'socks'].includes(proxy.protocol)) {
-          throw new TypeError('proxy.protocol must be one of ["http", "socks"]')
-        }
-        this.agent = (proxy.protocol === 'http')
-          ? new HttpsProxyAgent((proxy.username && proxy.password)
-            ? `http://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`
-            : `http://${proxy.host}:${proxy.port}`
-          )
-          : new SocksProxyAgent((proxy.username && proxy.password)
-            ? `socks://${proxy.username}:${proxy.password}@${proxy.host}:${proxy.port}`
-            : `socks://${proxy.host}:${proxy.port}`
-          )
-      }
     }
   }
 
@@ -68,46 +41,54 @@ class PayPal {
       nonce: '2023-03-14T11:11:09Z_eWb4VNducCmzC9kIK4MjcwXbC9ZuCzlz_LnnhcLeN8'
     }
      */
-    const response = await request({
+    const response = await fetch(url, {
       method: 'POST',
-      url,
       headers: {
-        Authorization: `Basic ${Buffer.from(this.clientId + ':' + this.clientSecret).toString('base64')}`,
+        Authorization: `Basic ${btoa(`${this.clientId}:${this.clientSecret}`)}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
-      form: {
-        grant_type: 'client_credentials'
-      },
-      json: true,
-      agent: this.agent
+      body: 'grant_type=client_credentials'
     })
 
-    const data = response.data
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(`PayPal OAuth failed with status ${response.status}: ${text}`)
+    }
+
+    const data = await response.json()
     cache.put(key, data.access_token, data.expires_in * 1000 - 30000)
 
     return data.access_token
   }
 
   async execute ({ method = 'GET', url, headers = {}, body }) {
-    method = method.toUpperCase()
-
     const accessToken = await this._authenticate()
-    const payload = {
+
+    const fetchOptions = {
       method,
-      url: this._getURL(url),
       headers: Object.assign({
-        Authorization: `Bearer ${accessToken}`
-      }, headers),
-      json: true,
-      agent: this.agent
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }, headers)
     }
 
-    if (body) {
-      payload.body = body
+    if (typeof body === 'string') {
+      fetchOptions.body = body
+    } else {
+      if (body != null) {
+        fetchOptions.body = new URLSearchParams(body)
+      }
     }
 
-    const response = await request(payload)
+    const response = await fetch(this._getURL(url), fetchOptions)
 
-    return response.data
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(`PayPal request failed with status ${response.status}: ${text}`)
+    }
+
+    const data = await response.json()
+    return data
   }
 }
 
